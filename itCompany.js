@@ -2,6 +2,7 @@ class Project {
     constructor(status='free') {
         this.id = this.getId();
         this.type = this.getType();
+        this.complexity = this.getComplexity();
         this.status = status;
     }
 
@@ -14,6 +15,14 @@ class Project {
 
     changeStatus(status) {
         this.status = status;
+    }
+
+    getComplexity() {
+        let complexity = [1, 2 ,3];
+
+        let randomComplexity = complexity[Math.floor(Math.random()*complexity.length)];
+
+        return randomComplexity;
     }
 
     getId() {
@@ -106,8 +115,9 @@ class Director {
         this.employees.push(new Employee(type));
     }
 
-    // deleteEmployee() {
-    // }
+    deleteEmployee(id) {
+        this.employees.splice(id, 1);
+    }
 
     getProjects() {
         let countPrj = Math.floor(Math.random()*4);
@@ -124,6 +134,7 @@ console.log(prj1.type);
 console.log(prj1.status);
 prj1.changeStatus('qa');
 console.log(prj1.status);
+
 
 
 let prj2 = new Employee('mob');
