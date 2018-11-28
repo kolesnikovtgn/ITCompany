@@ -82,26 +82,50 @@ class Department {
     constructor() {
 
     }
+
 }
 
 class Web extends Department {
-    constructor() {
+    constructor(employees, projects) {
+
         super();
+
+        this.webEmployees = employees.filter((item) => {
+            return item.type=='web';
+        });
+        this.webProjects = projects.filter((item) => {
+            return item.type=='web';
+        });
     }
 
 }
 
 class Mobile extends Department {
-    constructor() {
+    constructor(employees, projects) {
+
         super();
+
+        this.mobEmployees = employees.filter((item) => {
+            return item.type=='mob';
+        });
+        this.mobProjects = projects.filter((item) => {
+            return item.type=='mob';
+        });
     }
 
 }
 
 class Qa extends Department {
-    constructor() {
+    constructor(employees, projects) {
+
         super();
-    }
+
+        this.qaEmployees = employees.filter((item) => {
+            return item.type=='qa';
+        });
+        this.mobProjects = projects.filter((item) => {
+            return item.status=='completed';
+        });
 
 }
 
@@ -160,3 +184,21 @@ prj3.addEmployee('web');
 console.log(prj3.employees);
 prj3.getProjects();
 console.log(prj3.projects);
+
+let prj4 = new Department(prj3.employees, prj3.projects);
+
+console.log("All Employes!!!!!!!!!!!!!");
+console.log(prj3.employees);
+console.log("All Employes!!!!!!!!!!!!!");
+console.log("=========================");
+console.log("Web Employes!!!!!!!!!!!!!");
+console.log(prj4.webEmployees);
+console.log("Web Employes!!!!!!!!!!!!!");
+console.log("-------------------------");
+console.log("All Projects!!!!!!!!!!!!!");
+console.log(prj3.projects);
+console.log("All Projects!!!!!!!!!!!!!");
+console.log("=========================");
+console.log("Web Projects!!!!!!!!!!!!!");
+console.log(prj4.webProjects);
+console.log("Web Projects!!!!!!!!!!!!!");
