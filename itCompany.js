@@ -1,32 +1,47 @@
+const getId = function () {
+        let i, random;
+        let id = '';
+
+        for (i = 0; i < 32; i++) {
+            random = Math.random() * 16 | 0;
+            if (i === 8 || i === 12 || i === 16 || i === 20) {
+                id += '1';
+            }
+            id += (i === 12 ? 4 : (i === 16 ? (random & 3 | 8) : random)).toString(16);
+        }
+        return id;
+    }
+
+
 class Director {
     constructor() {
-        this.employees = [];
-        this.projects = [];
+
     }
 
-    addEmployee(type) {
-        this.employees.push(new Employee(type));
+    addEmployee(employees, employee) {
+        employees.push(employee);
     }
 
-    deleteEmployee(id) {
-        this.employees.splice(id, 1);
+    deleteEmployee(employees, id) {
+        employees.splice(id, 1);
     }
 
-    getProjects() {
+    getProjects(projects) {
         let countPrj = Math.floor(Math.random()*4);
 
         for(let i=0; i<=countPrj; i++){
-            this.projects.push(new Project());
+            projects.push(new Project());
         }
     }
 }
 
 class Project {
-    constructor(status='free') {
-        this.id = this.getId();
+    constructor(status='free', busyDays=0) {
+        this.id = getId();
         this.type = this.getType();
         this.complexity = this.getComplexity();
         this.status = status;
+        this.busyDays = busyDays;
     }
 
     getType() {
@@ -40,87 +55,77 @@ class Project {
         this.status = status;
     }
 
-    developmentProject() {
-        for(let i=this.complexity; i>0; i--){
-            this.changeStatus('busy');
-        }
-        this.changeStatus('completed');
-    }
+    // developmentProject() {
+    //     for(let i=this.complexity; i>0; i--){
+    //         this.changeStatus('busy');
+    //     }
+    //     this.changeStatus('completed');
+    // }
 
     getComplexity() {
-        let complexity = [1, 2 ,3];
-
-        let randomComplexity = complexity[Math.floor(Math.random()*complexity.length)];
+        let randomComplexity = Math.floor(Math.random() * 3) + 1;
 
         return randomComplexity;
     }
-
-    getId() {
-        let uuid = function () {
-            let i, random;
-            let id = '';
-
-            for (i = 0; i < 32; i++) {
-                random = Math.random() * 16 | 0;
-                if (i === 8 || i === 12 || i === 16 || i === 20) {
-                    id += '1';
-                }
-                id += (i === 12 ? 4 : (i === 16 ? (random & 3 | 8) : random)).toString(16);
-            }
-            return id;
-        }
-        return uuid();
-    }
 }
 
-
 class Employee {
-    constructor(type, experience=0, status='free') {
-        this.id = this.getId();
+    constructor(type, experience=0, status='free', busyDays=0, freeDays=0) {
+        this.id = getId();
         this.type = type;
         this.experience = experience;
         this.status = status;
-        this.busyDay=0;
-        this.freeDay=0;
+        this.busyDays = busyDays;
+        this.freeDays = freeDays;
     }
 
     countExp() {
         this.experience++;
     }
 
-    changeStatus() {
-        if (this.busyDay > 0) {
-            this.status = 'busy';
-        } else {
-            this.status = 'free';
-        }
+    countFreeDays() {
+        this.freeDays++;
     }
 
-    getProject(project) {
-        for(let i=project.complexity; i>0; i--){
-            this.busyDay++;
-        }
-        this.countExp();
-        this.changeStatus();
-        this.freeDay=0;
+    // changeStatus() {
+    //     if (this.busyDay > 0) {
+    //         this.status = 'busy';
+    //     } else {
+    //         this.status = 'free';
+    //     }
+    // }
+
+    // getProject(project) {
+    //     for(let i=project.complexity; i>0; i--){
+    //         this.busyDay++;
+    //     }
+    //     this.countExp();
+    //     this.changeStatus();
+    //     this.freeDay=0;
+    // }
+}
+
+class WebDeveloper extends Employee {
+    constructor(type='web', experience=0, status='free', busyDays=0, freeDays=0) {
+        super(experience, status, busyDays, freeDays);
+        this.id = getId();
+        this.type = type;
     }
+}
 
+class MobDeveloper extends Employee {
+    constructor(type='mob', experience=0, status='free', busyDays=0, freeDays=0) {
+        super(experience, status, busyDays, freeDays);
+        this.id = getId();
+        this.type = type;
+    }
+}
 
-    getId() {
-        let uuid = function () {
-            let i, random;
-            let id = '';
-
-            for (i = 0; i < 32; i++) {
-                random = Math.random() * 16 | 0;
-                if (i === 8 || i === 12 || i === 16 || i === 20) {
-                    id += '1';
-                }
-                id += (i === 12 ? 4 : (i === 16 ? (random & 3 | 8) : random)).toString(16);
-            }
-            return id;
-        }
-        return uuid();
+class QaDeveloper extends Employee {
+    constructor(type='qa', experience=0, status='free', busyDays=0, freeDays=0) {
+        super(experience, status, busyDays, freeDays);
+        this.id = getId();
+        this.type = type;
     }
 }
 
@@ -131,36 +136,48 @@ class Department {
 
 }
 
-class Web extends Department {
+class WebDepartment extends Department {
     constructor(employees, projects) {
 
         super();
 
-        this.webEmployees = employees.filter((item) => {
+        this.webEmployees = employees;
+
+        this.webProjects = projects;
+    }
+
+    getWebEmployees() {
+        let a = this.webEmployees.filter((item) => {
             return item.type == 'web';
         });
-        this.webProjects = projects.filter((item) => {
-            return (item.type == 'web') && (item.status == 'free');
-        });
+
+        return a;
     }
 
-    development() {
-        let webEmployesFree = this.webEmployees.filter((item) => {
-            return item.type == 'free';
+    getWebProjects() {
+        let a = this.webProjects.filter((item) => {
+            return item.type == 'web' && item.status == 'free';
         });
-
-        for(let i=0; i < webEmployesFree.length; i++) {
-            // webEmployesFree[i].getProject();
-            // this.webProjects[i].developmentProject();
-        }
-
-        this.webProjects.forEach(() => {
-
-        });
+        return a;
     }
+
+    // development() {
+    //     let webEmployesFree = this.webEmployees.filter((item) => {
+    //         return item.type == 'free';
+    //     });
+    //
+    //     for(let i=0; i < webEmployesFree.length; i++) {
+    //         // webEmployesFree[i].getProject();
+    //         // this.webProjects[i].developmentProject();
+    //     }
+    //
+    //     this.webProjects.forEach(() => {
+    //
+    //     });
+    // }
 }
 
-class Mobile extends Department {
+class MobileDepartment extends Department {
     constructor(employees, projects) {
 
         super();
@@ -175,7 +192,7 @@ class Mobile extends Department {
 
 }
 
-class Qa extends Department {
+class QaDepartment extends Department {
     constructor(employees, projects) {
 
         super();
@@ -192,28 +209,44 @@ class Qa extends Department {
 
 class Company {
     constructor() {
+        this.employees = [];
+        this.projects = [];
+
         this.director = new Director();
-        this.webDepartment = new Web(this.director.employees, this.director.projects);
-        this.mobDepartment = new Mobile(this.director.employees, this.director.projects);
-        this.qaDepartment = new Qa(this.director.employees, this.director.projects);
+        this.webDeveloper = new WebDeveloper();
+        this.webDepartment = new WebDepartment(this.employees, this.projects);
 
 
     }
 
-    work(allDays) {
-        for(let i=0; i<allDays; i++) {
-            this.director.getProjects();
-            // if(i==0) {console.log("lets GO!"); continue;} // Если это первый день - переходим на следующий день
-        }
-        console.log(this.director.projects);
-        console.log("sdfsdfdsf");
+    work() {
+        this.director.getProjects(this.projects);
+        this.director.addEmployee(this.employees, new WebDeveloper());
+        this.director.addEmployee(this.employees, new WebDeveloper());
+        this.director.addEmployee(this.employees, new WebDeveloper());
+        this.director.addEmployee(this.employees, new WebDeveloper());
+        console.log(this.projects);
+        console.log("====================");
+        console.log(this.employees);
 
-        console.log("sdfsdfdsf");
-        console.log(this.director.projects);
-        console.log(this.director.projects.length);
+        // this.employees.forEach((item) => {
+        //    if(item.status == 'free') {
+        //        item.getProject(this.projects[0]);
+        //        console.log(item.status);
+        //    }
+        //    item.changeFreeDays();
+        //    console.log(this.employees);
+        //    if(item.freeDays == 3) {
+        //        this.director.deleteEmployee(this.employees, item.id);
+        //    }
+        //     console.log(this.employees);
+        // });
+        console.log("+++++++++++++++++++++++++++++++++++++");
+        console.log(this.webDepartment.getWebEmployees());
+        console.log("+++++++++++++++++++++++++++++++++++++");
+        console.log(this.webDepartment.getWebProjects());
+
     }
-
 }
-
 let company = new Company();
-company.work(3);
+company.work();
