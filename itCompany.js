@@ -107,7 +107,7 @@ class Employee {
 
 class WebDeveloper extends Employee {
     constructor(type='web', experience=0, status='free', busyDays=0, freeDays=0) {
-        super(experience, status, busyDays, freeDays);
+        super(type, experience, status, busyDays, freeDays);
         this.id = getId();
         this.type = type;
     }
@@ -115,7 +115,7 @@ class WebDeveloper extends Employee {
 
 class MobDeveloper extends Employee {
     constructor(type='mob', experience=0, status='free', busyDays=0, freeDays=0) {
-        super(experience, status, busyDays, freeDays);
+        super(type, experience, status, busyDays, freeDays);
         this.id = getId();
         this.type = type;
     }
@@ -123,7 +123,7 @@ class MobDeveloper extends Employee {
 
 class QaDeveloper extends Employee {
     constructor(type='qa', experience=0, status='free', busyDays=0, freeDays=0) {
-        super(experience, status, busyDays, freeDays);
+        super(type, experience, status, busyDays, freeDays);
         this.id = getId();
         this.type = type;
     }
@@ -138,27 +138,22 @@ class Department {
 
 class WebDepartment extends Department {
     constructor(employees, projects) {
-
         super();
 
         this.webEmployees = employees;
-
         this.webProjects = projects;
     }
 
     getWebEmployees() {
-        let a = this.webEmployees.filter((item) => {
+        return this.webEmployees.filter((item) => {
             return item.type == 'web';
         });
-
-        return a;
     }
 
     getWebProjects() {
-        let a = this.webProjects.filter((item) => {
+        return this.webProjects.filter((item) => {
             return item.type == 'web' && item.status == 'free';
         });
-        return a;
     }
 
     // development() {
@@ -177,15 +172,22 @@ class WebDepartment extends Department {
     // }
 }
 
-class MobileDepartment extends Department {
+class MobDepartment extends Department {
     constructor(employees, projects) {
-
         super();
 
-        this.mobEmployees = employees.filter((item) => {
+        this.mobEmployees = employees;
+        this.mobProjects = projects;
+    }
+
+    getMobEmployees() {
+        return this.mobEmployees.filter((item) => {
             return item.type == 'mob';
         });
-        this.mobProjects = projects.filter((item) => {
+    }
+
+    getMobProjects() {
+        return this.mobProjects.filter((item) => {
             return (item.type == 'mob') && (item.status == 'free');
         });
     }
@@ -194,16 +196,23 @@ class MobileDepartment extends Department {
 
 class QaDepartment extends Department {
     constructor(employees, projects) {
-
         super();
 
-        this.qaEmployees = employees.filter((item) => {
+        this.qaEmployees = employees;
+        this.qaProjects = projects;
+
+    }
+
+    getQaEmployees() {
+        return this.qaEmployees.filter((item) => {
             return item.type == 'qa';
         });
-        this.mobProjects = projects.filter((item) => {
+    }
+
+    getQaProjects() {
+        return this.qaProjects.filter((item) => {
             return item.status == 'completed';
         });
-
     }
 }
 
@@ -213,9 +222,8 @@ class Company {
         this.projects = [];
 
         this.director = new Director();
-        this.webDeveloper = new WebDeveloper();
         this.webDepartment = new WebDepartment(this.employees, this.projects);
-
+        this.qaDepartment = new QaDepartment(this.employees, this.projects);
 
     }
 
@@ -225,6 +233,7 @@ class Company {
         this.director.addEmployee(this.employees, new WebDeveloper());
         this.director.addEmployee(this.employees, new WebDeveloper());
         this.director.addEmployee(this.employees, new WebDeveloper());
+        this.director.addEmployee(this.employees, new QaDeveloper());
         console.log(this.projects);
         console.log("====================");
         console.log(this.employees);
@@ -245,6 +254,18 @@ class Company {
         console.log(this.webDepartment.getWebEmployees());
         console.log("+++++++++++++++++++++++++++++++++++++");
         console.log(this.webDepartment.getWebProjects());
+        this.webDepartment.getWebEmployees()[0].countExp();
+        this.webDepartment.getWebEmployees()[0].countExp();
+        this.webDepartment.getWebEmployees()[0].countFreeDays();
+        console.log(this.webDepartment.getWebEmployees()[0].id);
+        console.log(this.webDepartment.getWebEmployees()[0].type);
+        console.log(this.webDepartment.getWebEmployees()[0].experience);
+        console.log(this.webDepartment.getWebEmployees()[0].status);
+        console.log(this.webDepartment.getWebEmployees()[0].busyDays);
+        console.log(this.webDepartment.getWebEmployees()[0].freeDays);
+
+        this.qaDepartment.getQaEmployees()[0].countFreeDays();
+        console.log(this.qaDepartment.getQaEmployees());
 
     }
 }
