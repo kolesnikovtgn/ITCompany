@@ -55,12 +55,21 @@ class Project {
         this.status = status;
     }
 
-    // developmentProject() {
-    //     for(let i=this.complexity; i>0; i--){
-    //         this.changeStatus('busy');
-    //     }
-    //     this.changeStatus('completed');
-    // }
+    countBusyDays() {
+        this.busyDays--;
+    }
+
+    setBusyDays(complexity) {
+        this.busyDays = complexity;
+    }
+
+    developmentProject() {
+        if(this.busyDays > 0) {
+            this.changeStatus('busy');
+        } else {
+            this.changeStatus('completed');
+        }
+    }
 
     getComplexity() {
         let randomComplexity = Math.floor(Math.random() * 3) + 1;
@@ -87,22 +96,27 @@ class Employee {
         this.freeDays++;
     }
 
-    // changeStatus() {
-    //     if (this.busyDay > 0) {
-    //         this.status = 'busy';
-    //     } else {
-    //         this.status = 'free';
-    //     }
-    // }
+    countBusyDays() {
+        this.busyDays--;
+    }
 
-    // getProject(project) {
-    //     for(let i=project.complexity; i>0; i--){
-    //         this.busyDay++;
-    //     }
-    //     this.countExp();
-    //     this.changeStatus();
-    //     this.freeDay=0;
-    // }
+    changeStatus() {
+        if (this.busyDays > 0) {
+            this.status = 'busy';
+        } else {
+            this.countExp();
+            this.status = 'free';
+        }
+    }
+
+    getProject(projectComplexity) {
+
+        this.busyDay = projectComplexity;
+
+        this.countExp();
+        this.changeStatus();
+        this.freeDays = 0;
+    }
 }
 
 class WebDeveloper extends Employee {
@@ -137,39 +151,76 @@ class Department {
 }
 
 class WebDepartment extends Department {
-    constructor(employees, projects) {
+    constructor(employees, projects, needWebDevelopers=0) {
         super();
 
-        this.webEmployees = employees;
+        this.webDevelopers = employees;
         this.webProjects = projects;
+        this.needWebDevelopers = needWebDevelopers;
     }
 
-    getWebEmployees() {
-        return this.webEmployees.filter((item) => {
-            return item.type == 'web';
+    getWebDevelopersFree() {
+        return this.webDevelopers.filter((item) => {
+            return item.type == 'web' && item.status == 'free';
         });
     }
 
-    getWebProjects() {
+    getWebDevelopersBusy() {
+        return this.webDevelopers.filter((item) => {
+            return item.type == 'web' && item.status == 'busy';
+        });
+    }
+
+    getWebProjectsFree() {
         return this.webProjects.filter((item) => {
             return item.type == 'web' && item.status == 'free';
         });
     }
 
-    // development() {
-    //     let webEmployesFree = this.webEmployees.filter((item) => {
-    //         return item.type == 'free';
-    //     });
-    //
-    //     for(let i=0; i < webEmployesFree.length; i++) {
-    //         // webEmployesFree[i].getProject();
-    //         // this.webProjects[i].developmentProject();
-    //     }
-    //
-    //     this.webProjects.forEach(() => {
-    //
-    //     });
-    // }
+    getWebProjectsBusy() {
+        return this.webProjects.filter((item) => {
+            return item.type == 'web' && item.status == 'busy';
+        });
+    }
+
+    resetNeedWebDevelopers() {
+        this.needWebDevelopers = 0;
+    }
+
+    getNeedWebDevelopers() {
+        return this.needWebDevelopers;
+    }
+
+    countNeedWebDevelopers() {
+        this.needWebDevelopers++;
+    }
+
+    developmentWebProjects() {
+        this.getWebProjectsFree().forEach((itemWebProject) => {
+            if(this.getWebDevelopersFree().length > 0) {
+                    itemWebProject.setBusyDays(itemWebProject.complexity);
+                    itemWebProject.developmentProject();
+
+                    this.getWebDevelopersFree()[0].getProject();
+            } else {
+                this.countNeedWebDevelopers();
+            }
+        });
+
+        this.getWebDevelopersFree().forEach((itemFreeDevelopers) => {
+            itemFreeDevelopers.countFreeDays();
+        });
+
+        this.getWebProjectsBusy().forEach((itemBusyProject) => {
+            itemBusyProject.countBusyDays();
+            itemBusyProject.developmentProject();
+        });
+
+        this.getWebDevelopersBusy((itemBusyDevelopers) => {
+            itemBusyDevelopers.countBusyDays();
+            itemBusyDevelopers.changeStatus();
+        });
+    }
 }
 
 class MobDepartment extends Department {
@@ -223,51 +274,38 @@ class Company {
 
         this.director = new Director();
         this.webDepartment = new WebDepartment(this.employees, this.projects);
-        this.qaDepartment = new QaDepartment(this.employees, this.projects);
-
+        this.webDeveloper = new WebDeveloper();
     }
 
-    work() {
-        this.director.getProjects(this.projects);
-        this.director.addEmployee(this.employees, new WebDeveloper());
-        this.director.addEmployee(this.employees, new WebDeveloper());
-        this.director.addEmployee(this.employees, new WebDeveloper());
-        this.director.addEmployee(this.employees, new WebDeveloper());
-        this.director.addEmployee(this.employees, new QaDeveloper());
-        console.log(this.projects);
-        console.log("====================");
-        console.log(this.employees);
+    work(allDays) {
 
-        // this.employees.forEach((item) => {
-        //    if(item.status == 'free') {
-        //        item.getProject(this.projects[0]);
-        //        console.log(item.status);
-        //    }
-        //    item.changeFreeDays();
-        //    console.log(this.employees);
-        //    if(item.freeDays == 3) {
-        //        this.director.deleteEmployee(this.employees, item.id);
-        //    }
-        //     console.log(this.employees);
-        // });
-        console.log("+++++++++++++++++++++++++++++++++++++");
-        console.log(this.webDepartment.getWebEmployees());
-        console.log("+++++++++++++++++++++++++++++++++++++");
-        console.log(this.webDepartment.getWebProjects());
-        this.webDepartment.getWebEmployees()[0].countExp();
-        this.webDepartment.getWebEmployees()[0].countExp();
-        this.webDepartment.getWebEmployees()[0].countFreeDays();
-        console.log(this.webDepartment.getWebEmployees()[0].id);
-        console.log(this.webDepartment.getWebEmployees()[0].type);
-        console.log(this.webDepartment.getWebEmployees()[0].experience);
-        console.log(this.webDepartment.getWebEmployees()[0].status);
-        console.log(this.webDepartment.getWebEmployees()[0].busyDays);
-        console.log(this.webDepartment.getWebEmployees()[0].freeDays);
+        for(let i=1; i <= allDays; i++) {
 
-        this.qaDepartment.getQaEmployees()[0].countFreeDays();
-        console.log(this.qaDepartment.getQaEmployees());
+            if(this.projects.length > 0) {
+                this.director.getProjects(this.projects);
+            } else {
+                this.director.getProjects(this.projects);
+                continue;
+            }
+            // WebDepartment work
+            this.webDepartment.developmentWebProjects();
+            for(let i=0; i < this.webDepartment.getNeedWebDevelopers(); i++){
+                this.director.addEmployee(this.employees, this.webDeveloper);
+            }
+
+            this.employees.forEach((itemDevelopers) => {
+                if(itemDevelopers.freeDays == 3) {
+                    this.director.deleteEmployee(this.employees, itemDevelopers.id);
+                }
+            });
+
+            console.log(i + "=========" + i);
+            console.log(this.employees);
+            console.log(this.projects);
+            console.log(i + "=========" + i);
+        }
 
     }
 }
 let company = new Company();
-company.work();
+company.work(4);
