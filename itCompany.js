@@ -22,8 +22,8 @@ class Director {
         employees.push(employee);
     }
 
-    deleteEmployee(employees, id) {
-        employees.splice(id, 1);
+    deleteEmployee(employees, index) {
+        employees.splice(index, 1);
     }
 
     getProjects(projects) {
@@ -100,22 +100,29 @@ class Employee {
         this.busyDays--;
     }
 
-    changeStatus() {
-        if (this.busyDays > 0) {
-            this.status = 'busy';
+    changeStatus(status) {
+        this.status = status;
+    }
+
+    resetFreeDays() {
+        this.freeDays = 0;
+    }
+
+    changeStatusOfBusy() {
+        if(this.busyDays > 0) {
+            this.changeStatus('busy');
         } else {
             this.countExp();
-            this.status = 'free';
+            this.changeStatus('free');
         }
     }
 
     getProject(projectComplexity) {
 
-        this.busyDay = projectComplexity;
+        this.busyDays = projectComplexity;
 
-        this.countExp();
-        this.changeStatus();
-        this.freeDays = 0;
+        this.changeStatusOfBusy();
+        this.resetFreeDays();
     }
 }
 
@@ -201,7 +208,7 @@ class WebDepartment extends Department {
                     itemWebProject.setBusyDays(itemWebProject.complexity);
                     itemWebProject.developmentProject();
 
-                    this.getWebDevelopersFree()[0].getProject();
+                    this.getWebDevelopersFree()[0].getProject(itemWebProject.complexity);
             } else {
                 this.countNeedWebDevelopers();
             }
@@ -216,9 +223,9 @@ class WebDepartment extends Department {
             itemBusyProject.developmentProject();
         });
 
-        this.getWebDevelopersBusy((itemBusyDevelopers) => {
+        this.getWebDevelopersBusy().forEach((itemBusyDevelopers) => {
             itemBusyDevelopers.countBusyDays();
-            itemBusyDevelopers.changeStatus();
+            itemBusyDevelopers.changeStatusOfBusy();
         });
     }
 }
@@ -274,7 +281,6 @@ class Company {
 
         this.director = new Director();
         this.webDepartment = new WebDepartment(this.employees, this.projects);
-        this.webDeveloper = new WebDeveloper();
     }
 
     work(allDays) {
@@ -289,23 +295,34 @@ class Company {
             }
             // WebDepartment work
             this.webDepartment.developmentWebProjects();
+
             for(let i=0; i < this.webDepartment.getNeedWebDevelopers(); i++){
-                this.director.addEmployee(this.employees, this.webDeveloper);
+                this.director.addEmployee(this.employees, new WebDeveloper());
             }
 
-            this.employees.forEach((itemDevelopers) => {
-                if(itemDevelopers.freeDays == 3) {
-                    this.director.deleteEmployee(this.employees, itemDevelopers.id);
-                }
-            });
+            this.webDepartment.resetNeedWebDevelopers();
 
-            console.log(i + "=========" + i);
-            console.log(this.employees);
-            console.log(this.projects);
-            console.log(i + "=========" + i);
+            // this.employees.forEach((itemDevelopers, index) => {
+            //     if(itemDevelopers.freeDays == 3) {
+            //         this.director.deleteEmployee(this.employees, index);
+            //     }
+            // });
+
+            // console.log(i + "=========" + i);
+            // console.log(this.employees);
+            // console.log(this.projects);
+            // console.log(i + "=========" + i);
         }
 
+        console.log(this.employees);
+        console.log("000%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+        // this.employees.forEach((item, index) => {
+        //     if(item.freeDays > 3) {
+        //         this.director.deleteEmployee(this.employees, index);
+        //     }
+        // });
+        console.log(this.employees);
     }
 }
 let company = new Company();
-company.work(4);
+company.work(15);
