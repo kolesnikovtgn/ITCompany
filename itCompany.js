@@ -14,16 +14,29 @@ const getId = function () {
 
 
 class Director {
-    constructor() {
-
+    constructor(deleteEmployees=0) {
+        this.deleteEmployees = deleteEmployees;
     }
 
     addEmployee(employees, employee) {
         employees.push(employee);
     }
 
-    deleteEmployee(employees, index) {
+    deleteEmployee(employees, id) {
+        // Он ругается на findIndex, попробуем перенести поиск  index вовнутрь Company
+        // перед вызовом функции deleteEmployee , видимо что то в классах не дает обратиться к findIndex
+        const index = employees.findIndex((item) => item.id === id);
+
         employees.splice(index, 1);
+        this.countDeleteEmployees();
+    }
+
+    countDeleteEmployees() {
+        this.deleteEmployees++;
+    }
+
+    getDeleteEmployees() {
+        return this.deleteEmployees;
     }
 
     getProjects(projects) {
@@ -86,6 +99,10 @@ class Employee {
         this.status = status;
         this.busyDays = busyDays;
         this.freeDays = freeDays;
+    }
+
+    getId() {
+        return this.id;
     }
 
     countExp() {
@@ -202,6 +219,30 @@ class WebDepartment extends Department {
         this.needWebDevelopers++;
     }
 
+    getEmployeesForDelete() {
+        function compareExperience(employee1, employee2) {
+            return employee1.experience - employee2.experience;
+        }
+
+        let freeAndBigFreeDaysEmployees = this.webDevelopers.filter((item) => {
+            return item.status == 'free' && item.freeDays > 2;
+        });
+
+        return freeAndBigFreeDaysEmployees.sort(compareExperience);
+    }
+
+    // getEmployeesForProject() {
+    //     function compareExperience(employee1, employee2) {
+    //         return employee2.experience - employee1.experience;
+    //     }
+    //
+    //     let freeAndBigFreeDaysEmployees = this.webDevelopers.filter((item) => {
+    //         return item.status == 'free' && item.freeDays > 0;
+    //     });
+    //
+    //     return freeAndBigFreeDaysEmployees.sort(compareExperience);
+    // }
+
     developmentWebProjects() {
         this.getWebProjectsFree().forEach((itemWebProject) => {
             if(this.getWebDevelopersFree().length > 0) {
@@ -316,12 +357,12 @@ class Company {
 
         console.log(this.employees);
         console.log("000%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
-        // this.employees.forEach((item, index) => {
-        //     if(item.freeDays > 3) {
-        //         this.director.deleteEmployee(this.employees, index);
-        //     }
-        // });
+        if(this.webDepartment.getEmployeesForDelete().length > 0) {
+            this.director.deleteEmployee(this.webDepartment.getEmployeesForDelete()[0], this.webDepartment.getEmployeesForDelete()[0].getId());
+        }
         console.log(this.employees);
+
+        console.log(this.director.getDeleteEmployees());
     }
 }
 let company = new Company();
