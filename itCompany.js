@@ -14,7 +14,8 @@ const getId = function () {
 
 
 class Director {
-    constructor(deleteEmployees=0) {
+    constructor(employees, deleteEmployees=0) {
+        this.employees = employees;
         this.deleteEmployees = deleteEmployees;
     }
 
@@ -22,12 +23,13 @@ class Director {
         employees.push(employee);
     }
 
-    deleteEmployee(employees, id) {
+    deleteEmployee(id) {
         // Он ругается на findIndex, попробуем перенести поиск  index вовнутрь Company
         // перед вызовом функции deleteEmployee , видимо что то в классах не дает обратиться к findIndex
-        const index = employees.findIndex((item) => item.id === id);
 
-        employees.splice(index, 1);
+        const index = this.employees.findIndex((item) => item.id === id);
+
+        this.employees.splice(index, 1);
         this.countDeleteEmployees();
     }
 
@@ -320,7 +322,7 @@ class Company {
         this.employees = [];
         this.projects = [];
 
-        this.director = new Director();
+        this.director = new Director(this.employees);
         this.webDepartment = new WebDepartment(this.employees, this.projects);
     }
 
@@ -343,27 +345,18 @@ class Company {
 
             this.webDepartment.resetNeedWebDevelopers();
 
-            // this.employees.forEach((itemDevelopers, index) => {
-            //     if(itemDevelopers.freeDays == 3) {
-            //         this.director.deleteEmployee(this.employees, index);
-            //     }
-            // });
+            if(this.webDepartment.getEmployeesForDelete().length > 0) {
+                this.director.deleteEmployee(this.webDepartment.getEmployeesForDelete()[0], this.webDepartment.getEmployeesForDelete()[0].getId());
+            }
 
-            // console.log(i + "=========" + i);
-            // console.log(this.employees);
-            // console.log(this.projects);
-            // console.log(i + "=========" + i);
-        }
+            // MobileDepartament work
 
-        console.log(this.employees);
-        console.log("000%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
-        if(this.webDepartment.getEmployeesForDelete().length > 0) {
-            this.director.deleteEmployee(this.webDepartment.getEmployeesForDelete()[0], this.webDepartment.getEmployeesForDelete()[0].getId());
+
         }
-        console.log(this.employees);
 
         console.log(this.director.getDeleteEmployees());
     }
 }
+
 let company = new Company();
-company.work(15);
+company.work(25);
