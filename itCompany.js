@@ -274,22 +274,98 @@ class WebDepartment extends Department {
 }
 
 class MobDepartment extends Department {
-    constructor(employees, projects) {
+    constructor(employees, projects, needMobDevelopers=0) {
         super();
 
-        this.mobEmployees = employees;
+        this.mobDevelopers = employees;
         this.mobProjects = projects;
+        this.needMobDevelopers = needMobDevelopers;
     }
 
-    getMobEmployees() {
-        return this.mobEmployees.filter((item) => {
-            return item.type == 'mob';
+    getMobDevelopersFree() {
+        return this.mobDevelopers.filter((item) => {
+            return item.type == 'mob' && item.status == 'free';
         });
     }
 
-    getMobProjects() {
+    getMobDevelopersBusy() {
+        return this.mobDevelopers.filter((item) => {
+            return item.type == 'mob' && item.status == 'busy';
+        });
+    }
+
+    getMobProjectsFree() {
         return this.mobProjects.filter((item) => {
-            return (item.type == 'mob') && (item.status == 'free');
+            return item.type == 'mob' && item.status == 'free';
+        });
+    }
+
+    getMobProjectsBusy() {
+        return this.mobProjects.filter((item) => {
+            return item.type == 'mob' && item.status == 'busy';
+        });
+    }
+
+    resetNeedMobDevelopers() {
+        this.needMobDevelopers = 0;
+    }
+
+    getNeedMobDevelopers() {
+        return this.needMobDevelopers;
+    }
+
+    countNeedMobDevelopers() {
+        this.needMobDevelopers++;
+    }
+
+    getEmployeesForDelete() {
+        function compareExperience(employee1, employee2) {
+            return employee1.experience - employee2.experience;
+        }
+
+        let freeAndBigFreeDaysEmployees = this.mobDevelopers.filter((item) => {
+            return item.status == 'free' && item.freeDays > 2;
+        });
+
+        return freeAndBigFreeDaysEmployees.sort(compareExperience);
+    }
+
+    // getEmployeesForProject() {
+    //     function compareExperience(employee1, employee2) {
+    //         return employee2.experience - employee1.experience;
+    //     }
+    //
+    //     let freeAndBigFreeDaysEmployees = this.mobDevelopers.filter((item) => {
+    //         return item.status == 'free' && item.freeDays > 0;
+    //     });
+    //
+    //     return freeAndBigFreeDaysEmployees.sort(compareExperience);
+    // }
+
+    developmentMobProjects() {
+        this.getMobProjectsFree().forEach((itemMobProject) => {
+            if(this.getMobDevelopersFree().length > 0) {
+                itemMobProject.setBusyDays(itemMobProject.complexity);
+                itemMobProject.developmentProject();
+
+                this.getMobDevelopersFree()[0].getProject(itemMobProject.complexity);
+            } else {
+                this.countNeedMobDevelopers();
+            }
+        });
+
+        this.getMobDevelopersFree().forEach((itemFreeDevelopers) => {
+            itemFreeDevelopers.countFreeDays();
+        });
+
+        this.getMobProjectsBusy().forEach((itemBusyProject) => {
+            itemBusyProject.countBusyDays();
+            itemBusyProject.developmentProject();
+        });
+
+        this.getMobDevelopersBusy().forEach((itemBusyDevelopers) => {
+            itemBusyDevelopers.countBusyDays();
+            itemBusyDevelopers.changeStatusOfBusy();
         });
     }
 
@@ -324,6 +400,7 @@ class Company {
 
         this.director = new Director(this.employees);
         this.webDepartment = new WebDepartment(this.employees, this.projects);
+        this.mobDepartment = new MobDepartment(this.employees, this.projects);
     }
 
     work(allDays) {
@@ -350,11 +427,25 @@ class Company {
             }
 
             // MobileDepartament work
+            this.mobDepartment.developmentMobProjects();
 
+            for(let i=0; i < this.mobDepartment.getNeedMobDevelopers(); i++){
+                this.director.addEmployee(this.employees, new MobDeveloper());
+            }
+
+            this.mobDepartment.resetNeedMobDevelopers();
+
+            if(this.mobDepartment.getEmployeesForDelete().length > 0) {
+                this.director.deleteEmployee(this.mobDepartment.getEmployeesForDelete()[0], this.mobDepartment.getEmployeesForDelete()[0].getId());
+            }
 
         }
 
+        console.log(this.webDepartment.webDevelopers);
+        console.log(this.webDepartment.webProjects);
         console.log(this.director.getDeleteEmployees());
+        console.log(this.mobDepartment.mobDevelopers);
+        console.log(this.mobDepartment.mobProjects);
     }
 }
 
