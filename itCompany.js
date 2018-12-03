@@ -60,7 +60,7 @@ class Project {
     }
 
     getType() {
-        let typeArray = ['web', 'mobile'];
+        let typeArray = ['web', 'mob'];
         let randomType = typeArray[Math.floor(Math.random()*typeArray.length)];
 
         return randomType;
@@ -185,6 +185,18 @@ class WebDepartment extends Department {
         this.needWebDevelopers = needWebDevelopers;
     }
 
+    getWebDevelopers() {
+        return this.webDevelopers.filter((item) => {
+            return item.type == 'web';
+        });
+    }
+
+    getWebProjects() {
+        return this.webProjects.filter((item) => {
+            return item.type == 'web';
+        });
+    }
+
     getWebDevelopersFree() {
         return this.webDevelopers.filter((item) => {
             return item.type == 'web' && item.status == 'free';
@@ -282,6 +294,18 @@ class MobDepartment extends Department {
         this.needMobDevelopers = needMobDevelopers;
     }
 
+    getMobDevelopers() {
+        return this.mobDevelopers.filter((item) => {
+            return item.type == 'mob';
+        });
+    }
+
+    getMobProjects() {
+        return this.mobProjects.filter((item) => {
+            return item.type == 'mob';
+        });
+    }
+
     getMobDevelopersFree() {
         return this.mobDevelopers.filter((item) => {
             return item.type == 'mob' && item.status == 'free';
@@ -343,14 +367,30 @@ class MobDepartment extends Department {
     // }
 
     developmentMobProjects() {
+        // this.getMobProjectsFree().forEach((itemMobProject) => {
+        //     if(this.getMobDevelopersFree().length > 0) {
+        //         itemMobProject.setBusyDays(itemMobProject.complexity);
+        //         itemMobProject.developmentProject();
+        //
+        //         this.getMobDevelopersFree()[0].getProject(itemMobProject.complexity);
+        //     } else {
+        //         this.countNeedMobDevelopers();
+        //     }
+        // });
+
         this.getMobProjectsFree().forEach((itemMobProject) => {
-            if(this.getMobDevelopersFree().length > 0) {
-                itemMobProject.setBusyDays(itemMobProject.complexity);
+            if(this.getMobDevelopersFree().length > 0 && this.getMobDevelopersFree().length >= itemMobProject.complexity) {
+                itemMobProject.setBusyDays(1);
                 itemMobProject.developmentProject();
 
-                this.getMobDevelopersFree()[0].getProject(itemMobProject.complexity);
+
+                for(let i=0; i < itemMobProject.complexity; i++) {
+                    this.getMobDevelopersFree()[0].getProject(1);
+                }
             } else {
-                this.countNeedMobDevelopers();
+                for(let i=0; i < itemMobProject.complexity; i++) {
+                    this.countNeedMobDevelopers();
+                }
             }
         });
 
@@ -441,13 +481,13 @@ class Company {
 
         }
 
-        console.log(this.webDepartment.webDevelopers);
-        console.log(this.webDepartment.webProjects);
+        console.log(this.webDepartment.getWebDevelopers());
+        console.log(this.webDepartment.getWebProjects());
         console.log(this.director.getDeleteEmployees());
-        console.log(this.mobDepartment.mobDevelopers);
-        console.log(this.mobDepartment.mobProjects);
+        console.log(this.mobDepartment.getMobDevelopers());
+        console.log(this.mobDepartment.getMobProjects());
     }
 }
 
 let company = new Company();
-company.work(25);
+company.work(15);
