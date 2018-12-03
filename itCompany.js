@@ -10,17 +10,27 @@ const getId = function () {
             id += (i === 12 ? 4 : (i === 16 ? (random & 3 | 8) : random)).toString(16);
         }
         return id;
-    }
+}
 
 
 class Director {
-    constructor(employees, deleteEmployees=0) {
+    constructor(employees, deleteEmployees=0, addEmployees=0) {
         this.employees = employees;
         this.deleteEmployees = deleteEmployees;
+        this.addEmployees = addEmployees;
     }
 
     addEmployee(employees, employee) {
         employees.push(employee);
+        this.countAddEmployees();
+    }
+
+    countAddEmployees() {
+        this.addEmployees++;
+    }
+
+    getAddEmployees() {
+        return this.addEmployees;
     }
 
     deleteEmployee(id) {
@@ -60,7 +70,7 @@ class Project {
     }
 
     getType() {
-        let typeArray = ['web', 'mobile'];
+        let typeArray = ['web', 'mob'];
         let randomType = typeArray[Math.floor(Math.random()*typeArray.length)];
 
         return randomType;
@@ -83,6 +93,14 @@ class Project {
             this.changeStatus('busy');
         } else {
             this.changeStatus('completed');
+        }
+    }
+
+    developmentOfQa() {
+        if(this.busyDays > 0) {
+            this.changeStatus('completed')
+        } else {
+            this.changeStatus('qaApproved');
         }
     }
 
@@ -185,6 +203,18 @@ class WebDepartment extends Department {
         this.needWebDevelopers = needWebDevelopers;
     }
 
+    getWebDevelopers() {
+        return this.webDevelopers.filter((item) => {
+            return item.type == 'web';
+        });
+    }
+
+    getWebProjects() {
+        return this.webProjects.filter((item) => {
+            return item.type == 'web';
+        });
+    }
+
     getWebDevelopersFree() {
         return this.webDevelopers.filter((item) => {
             return item.type == 'web' && item.status == 'free';
@@ -274,38 +304,132 @@ class WebDepartment extends Department {
 }
 
 class MobDepartment extends Department {
-    constructor(employees, projects) {
+    constructor(employees, projects, needMobDevelopers=0) {
         super();
 
-        this.mobEmployees = employees;
+        this.mobDevelopers = employees;
         this.mobProjects = projects;
+        this.needMobDevelopers = needMobDevelopers;
     }
 
-    getMobEmployees() {
-        return this.mobEmployees.filter((item) => {
+    getMobDevelopers() {
+        return this.mobDevelopers.filter((item) => {
             return item.type == 'mob';
         });
     }
 
     getMobProjects() {
         return this.mobProjects.filter((item) => {
-            return (item.type == 'mob') && (item.status == 'free');
+            return item.type == 'mob';
+        });
+    }
+
+    getMobDevelopersFree() {
+        return this.mobDevelopers.filter((item) => {
+            return item.type == 'mob' && item.status == 'free';
+        });
+    }
+
+    getMobDevelopersBusy() {
+        return this.mobDevelopers.filter((item) => {
+            return item.type == 'mob' && item.status == 'busy';
+        });
+    }
+
+    getMobProjectsFree() {
+        return this.mobProjects.filter((item) => {
+            return item.type == 'mob' && item.status == 'free';
+        });
+    }
+
+    getMobProjectsBusy() {
+        return this.mobProjects.filter((item) => {
+            return item.type == 'mob' && item.status == 'busy';
+        });
+    }
+
+    resetNeedMobDevelopers() {
+        this.needMobDevelopers = 0;
+    }
+
+    getNeedMobDevelopers() {
+        return this.needMobDevelopers;
+    }
+
+    countNeedMobDevelopers() {
+        this.needMobDevelopers++;
+    }
+
+    getEmployeesForDelete() {
+        function compareExperience(employee1, employee2) {
+            return employee1.experience - employee2.experience;
+        }
+
+        let freeAndBigFreeDaysEmployees = this.mobDevelopers.filter((item) => {
+            return item.status == 'free' && item.freeDays > 2;
+        });
+
+        return freeAndBigFreeDaysEmployees.sort(compareExperience);
+    }
+
+    // getEmployeesForProject() {
+    //     function compareExperience(employee1, employee2) {
+    //         return employee2.experience - employee1.experience;
+    //     }
+    //
+    //     let freeAndBigFreeDaysEmployees = this.mobDevelopers.filter((item) => {
+    //         return item.status == 'free' && item.freeDays > 0;
+    //     });
+    //
+    //     return freeAndBigFreeDaysEmployees.sort(compareExperience);
+    // }
+
+    developmentMobProjects() {
+        this.getMobProjectsFree().forEach((itemMobProject) => {
+            if(this.getMobDevelopersFree().length >= itemMobProject.complexity) {
+                itemMobProject.setBusyDays(1);
+                itemMobProject.developmentProject();
+
+
+                for(let i=0; i < itemMobProject.complexity; i++) {
+                    this.getMobDevelopersFree()[0].getProject(1);
+                }
+            } else {
+                for(let i=0; i < itemMobProject.complexity; i++) {
+                    this.countNeedMobDevelopers();
+                }
+            }
+        });
+
+        this.getMobDevelopersFree().forEach((itemFreeDevelopers) => {
+            itemFreeDevelopers.countFreeDays();
+        });
+
+        this.getMobProjectsBusy().forEach((itemBusyProject) => {
+            itemBusyProject.countBusyDays();
+            itemBusyProject.developmentProject();
+        });
+
+        this.getMobDevelopersBusy().forEach((itemBusyDevelopers) => {
+            itemBusyDevelopers.countBusyDays();
+            itemBusyDevelopers.changeStatusOfBusy();
         });
     }
 
 }
 
 class QaDepartment extends Department {
-    constructor(employees, projects) {
+    constructor(employees, projects, needQaDevelopers=0) {
         super();
 
-        this.qaEmployees = employees;
+        this.qaDevelopers = employees;
         this.qaProjects = projects;
+        this.needQaDevelopers = needQaDevelopers;
 
     }
 
-    getQaEmployees() {
-        return this.qaEmployees.filter((item) => {
+    getQaDevelopers() {
+        return this.qaDevelopers.filter((item) => {
             return item.type == 'qa';
         });
     }
@@ -315,6 +439,75 @@ class QaDepartment extends Department {
             return item.status == 'completed';
         });
     }
+
+    getQaApprovedProjects() {
+        return this.qaProjects.filter((item) => {
+            return item.status == 'qaApproved';
+        });
+    }
+
+    getQaDevelopersFree() {
+        return this.qaDevelopers.filter((item) => {
+            return item.type == 'qa' && item.status == 'free';
+        });
+    }
+
+    getQaDevelopersBusy() {
+        return this.qaDevelopers.filter((item) => {
+            return item.type == 'qa' && item.status == 'busy';
+        });
+    }
+
+    resetNeedQaDevelopers() {
+        this.needQaDevelopers = 0;
+    }
+
+    getNeedQaDevelopers() {
+        return this.needQaDevelopers;
+    }
+
+    countNeedQaDevelopers() {
+        this.needQaDevelopers++;
+    }
+
+    getEmployeesForDelete() {
+        function compareExperience(employee1, employee2) {
+            return employee1.experience - employee2.experience;
+        }
+
+        let freeAndBigFreeDaysEmployees = this.qaDevelopers.filter((item) => {
+            return item.status == 'free' && item.freeDays > 2;
+        });
+
+        return freeAndBigFreeDaysEmployees.sort(compareExperience);
+    }
+
+    developmentQaProjects() {
+        this.getQaProjects().forEach((itemQaProject) => {
+            if(this.getQaDevelopersFree().length > 0) {
+                itemQaProject.setBusyDays(0);
+                itemQaProject.developmentOfQa();
+
+                this.getQaDevelopersFree()[0].getProject(1);
+            } else {
+                this.countNeedQaDevelopers();
+            }
+        });
+
+        this.getQaDevelopersFree().forEach((itemFreeDevelopers) => {
+            itemFreeDevelopers.countFreeDays();
+        });
+
+        this.getQaProjects().forEach((itemBusyProject) => {
+            itemBusyProject.developmentOfQa();
+        });
+
+        this.getQaDevelopersBusy().forEach((itemBusyDevelopers) => {
+            itemBusyDevelopers.countBusyDays();
+            itemBusyDevelopers.changeStatusOfBusy();
+        });
+    }
+
 }
 
 class Company {
@@ -322,9 +515,14 @@ class Company {
         this.employees = [];
         this.projects = [];
 
+
+
         this.director = new Director(this.employees);
         this.webDepartment = new WebDepartment(this.employees, this.projects);
+        this.mobDepartment = new MobDepartment(this.employees, this.projects);
+        this.qaDepartament = new QaDepartment(this.employees, this.projects);
     }
+
 
     work(allDays) {
 
@@ -336,27 +534,68 @@ class Company {
                 this.director.getProjects(this.projects);
                 continue;
             }
-            // WebDepartment work
-            this.webDepartment.developmentWebProjects();
 
-            for(let i=0; i < this.webDepartment.getNeedWebDevelopers(); i++){
-                this.director.addEmployee(this.employees, new WebDeveloper());
-            }
+            this.webDepartmentWork();
 
-            this.webDepartment.resetNeedWebDevelopers();
+            this.mobDepartmentWork();
 
-            if(this.webDepartment.getEmployeesForDelete().length > 0) {
-                this.director.deleteEmployee(this.webDepartment.getEmployeesForDelete()[0], this.webDepartment.getEmployeesForDelete()[0].getId());
-            }
-
-            // MobileDepartament work
-
-
+            this.qaDepartmentWork();
         }
 
-        console.log(this.director.getDeleteEmployees());
+        this.getStatistic(allDays);
+
+    }
+
+    webDepartmentWork() {
+        this.webDepartment.developmentWebProjects();
+
+        for(let i=0; i < this.webDepartment.getNeedWebDevelopers(); i++){
+            this.director.addEmployee(this.employees, new WebDeveloper());
+        }
+
+        this.webDepartment.resetNeedWebDevelopers();
+
+        if(this.webDepartment.getEmployeesForDelete().length > 0) {
+            this.director.deleteEmployee(this.webDepartment.getEmployeesForDelete()[0], this.webDepartment.getEmployeesForDelete()[0].getId());
+        }
+    }
+
+    mobDepartmentWork() {
+        this.mobDepartment.developmentMobProjects();
+
+        for(let i=0; i < this.mobDepartment.getNeedMobDevelopers(); i++){
+            this.director.addEmployee(this.employees, new MobDeveloper());
+        }
+
+        this.mobDepartment.resetNeedMobDevelopers();
+
+        if(this.mobDepartment.getEmployeesForDelete().length > 0) {
+            this.director.deleteEmployee(this.mobDepartment.getEmployeesForDelete()[0], this.mobDepartment.getEmployeesForDelete()[0].getId());
+        }
+    }
+
+    qaDepartmentWork() {
+        if(this.qaDepartament.getQaProjects().length > 0) {
+            this.qaDepartament.developmentQaProjects();
+
+            for (let i = 0; i < this.qaDepartament.getNeedQaDevelopers(); i++) {
+                this.director.addEmployee(this.employees, new QaDeveloper());
+            }
+
+            this.qaDepartament.resetNeedQaDevelopers();
+
+            if (this.qaDepartament.getEmployeesForDelete().length > 0) {
+                this.director.deleteEmployee(this.qaDepartament.getEmployeesForDelete()[0], this.qaDepartament.getEmployeesForDelete()[0].getId());
+            }
+        }
+    }
+
+    getStatistic(allDays) {
+        console.log(`Фирма работает:          ${allDays}`);
+        console.log(`Принято разработчиков:   ${this.director.getAddEmployees()}`);
+        console.log(`Уволено разработчиков:   ${this.director.getDeleteEmployees()}`);
     }
 }
 
 let company = new Company();
-company.work(25);
+company.work(365);
