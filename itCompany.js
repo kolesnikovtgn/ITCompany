@@ -562,6 +562,7 @@ class Company {
 
     getStatistica(allDays) {
         console.log(`Фирма работает:          ${allDays}`);
+        console.log(`Выполнено проектов:      ${this.qaDepartament.getQaApprovedProjects().length}`);
         console.log(`Принято разработчиков:   ${this.director.getAddEmployees()}`);
         console.log(`Уволено разработчиков:   ${this.director.getDeleteEmployees()}`);
     }
