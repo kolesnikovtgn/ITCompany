@@ -34,9 +34,6 @@ class Director {
     }
 
     deleteEmployee(id) {
-        // Он ругается на findIndex, попробуем перенести поиск  index вовнутрь Company
-        // перед вызовом функции deleteEmployee , видимо что то в классах не дает обратиться к findIndex
-
         const index = this.employees.findIndex((item) => item.id === id);
 
         this.employees.splice(index, 1);
@@ -205,37 +202,37 @@ class WebDepartment extends Department {
 
     getWebDevelopers() {
         return this.webDevelopers.filter((item) => {
-            return item.type == 'web';
+            return item.type === 'web';
         });
     }
 
     getWebProjects() {
         return this.webProjects.filter((item) => {
-            return item.type == 'web';
+            return item.type === 'web';
         });
     }
 
     getWebDevelopersFree() {
         return this.webDevelopers.filter((item) => {
-            return item.type == 'web' && item.status == 'free';
+            return item.type ==='web' && item.status === 'free';
         });
     }
 
     getWebDevelopersBusy() {
         return this.webDevelopers.filter((item) => {
-            return item.type == 'web' && item.status == 'busy';
+            return item.type === 'web' && item.status === 'busy';
         });
     }
 
     getWebProjectsFree() {
         return this.webProjects.filter((item) => {
-            return item.type == 'web' && item.status == 'free';
+            return item.type === 'web' && item.status === 'free';
         });
     }
 
     getWebProjectsBusy() {
         return this.webProjects.filter((item) => {
-            return item.type == 'web' && item.status == 'busy';
+            return item.type === 'web' && item.status === 'busy';
         });
     }
 
@@ -257,23 +254,11 @@ class WebDepartment extends Department {
         }
 
         let freeAndBigFreeDaysEmployees = this.webDevelopers.filter((item) => {
-            return item.status == 'free' && item.freeDays > 2;
+            return item.status === 'free' && item.freeDays > 2;
         });
 
         return freeAndBigFreeDaysEmployees.sort(compareExperience);
     }
-
-    // getEmployeesForProject() {
-    //     function compareExperience(employee1, employee2) {
-    //         return employee2.experience - employee1.experience;
-    //     }
-    //
-    //     let freeAndBigFreeDaysEmployees = this.webDevelopers.filter((item) => {
-    //         return item.status == 'free' && item.freeDays > 0;
-    //     });
-    //
-    //     return freeAndBigFreeDaysEmployees.sort(compareExperience);
-    // }
 
     developmentWebProjects() {
         this.getWebProjectsFree().forEach((itemWebProject) => {
@@ -314,37 +299,37 @@ class MobDepartment extends Department {
 
     getMobDevelopers() {
         return this.mobDevelopers.filter((item) => {
-            return item.type == 'mob';
+            return item.type === 'mob';
         });
     }
 
     getMobProjects() {
         return this.mobProjects.filter((item) => {
-            return item.type == 'mob';
+            return item.type === 'mob';
         });
     }
 
     getMobDevelopersFree() {
         return this.mobDevelopers.filter((item) => {
-            return item.type == 'mob' && item.status == 'free';
+            return item.type === 'mob' && item.status === 'free';
         });
     }
 
     getMobDevelopersBusy() {
         return this.mobDevelopers.filter((item) => {
-            return item.type == 'mob' && item.status == 'busy';
+            return item.type === 'mob' && item.status === 'busy';
         });
     }
 
     getMobProjectsFree() {
         return this.mobProjects.filter((item) => {
-            return item.type == 'mob' && item.status == 'free';
+            return item.type === 'mob' && item.status === 'free';
         });
     }
 
     getMobProjectsBusy() {
         return this.mobProjects.filter((item) => {
-            return item.type == 'mob' && item.status == 'busy';
+            return item.type === 'mob' && item.status === 'busy';
         });
     }
 
@@ -366,23 +351,11 @@ class MobDepartment extends Department {
         }
 
         let freeAndBigFreeDaysEmployees = this.mobDevelopers.filter((item) => {
-            return item.status == 'free' && item.freeDays > 2;
+            return item.status === 'free' && item.freeDays > 2;
         });
 
         return freeAndBigFreeDaysEmployees.sort(compareExperience);
     }
-
-    // getEmployeesForProject() {
-    //     function compareExperience(employee1, employee2) {
-    //         return employee2.experience - employee1.experience;
-    //     }
-    //
-    //     let freeAndBigFreeDaysEmployees = this.mobDevelopers.filter((item) => {
-    //         return item.status == 'free' && item.freeDays > 0;
-    //     });
-    //
-    //     return freeAndBigFreeDaysEmployees.sort(compareExperience);
-    // }
 
     developmentMobProjects() {
         this.getMobProjectsFree().forEach((itemMobProject) => {
@@ -430,31 +403,31 @@ class QaDepartment extends Department {
 
     getQaDevelopers() {
         return this.qaDevelopers.filter((item) => {
-            return item.type == 'qa';
+            return item.type === 'qa';
         });
     }
 
     getQaProjects() {
         return this.qaProjects.filter((item) => {
-            return item.status == 'completed';
+            return item.status === 'completed';
         });
     }
 
     getQaApprovedProjects() {
         return this.qaProjects.filter((item) => {
-            return item.status == 'qaApproved';
+            return item.status === 'qaApproved';
         });
     }
 
     getQaDevelopersFree() {
         return this.qaDevelopers.filter((item) => {
-            return item.type == 'qa' && item.status == 'free';
+            return item.type === 'qa' && item.status === 'free';
         });
     }
 
     getQaDevelopersBusy() {
         return this.qaDevelopers.filter((item) => {
-            return item.type == 'qa' && item.status == 'busy';
+            return item.type === 'qa' && item.status === 'busy';
         });
     }
 
@@ -476,7 +449,7 @@ class QaDepartment extends Department {
         }
 
         let freeAndBigFreeDaysEmployees = this.qaDevelopers.filter((item) => {
-            return item.status == 'free' && item.freeDays > 2;
+            return item.status === 'free' && item.freeDays > 2;
         });
 
         return freeAndBigFreeDaysEmployees.sort(compareExperience);
@@ -525,7 +498,6 @@ class Company {
 
 
     work(allDays) {
-
         for(let i=1; i <= allDays; i++) {
 
             if(this.projects.length > 0) {
@@ -534,7 +506,6 @@ class Company {
                 this.director.getProjects(this.projects);
                 continue;
             }
-
             this.webDepartmentWork();
 
             this.mobDepartmentWork();
@@ -542,8 +513,7 @@ class Company {
             this.qaDepartmentWork();
         }
 
-        this.getStatistic(allDays);
-
+        this.getStatistica(allDays);
     }
 
     webDepartmentWork() {
@@ -590,8 +560,9 @@ class Company {
         }
     }
 
-    getStatistic(allDays) {
+    getStatistica(allDays) {
         console.log(`Фирма работает:          ${allDays}`);
+        console.log(`Выполнено проектов:      ${this.qaDepartament.getQaApprovedProjects().length}`);
         console.log(`Принято разработчиков:   ${this.director.getAddEmployees()}`);
         console.log(`Уволено разработчиков:   ${this.director.getDeleteEmployees()}`);
     }
