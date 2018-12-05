@@ -183,66 +183,65 @@ class QaDeveloper extends Employee {
 }
 
 class Department {
-    constructor() {
+    constructor(employees, projects, needDevelopers=0, type) {
+        this.developers = employees;
+        this.projects = projects;
+        this.needDevelopers = needDevelopers;
+        this.type = type;
+    }
 
+    getDevelopers() {
+        return this.developers.filter((item) => {
+            return item.type === this.type;
+        });
+    }
+
+    getProjects() {
+        return this.projects.filter((item) => {
+            return item.type === this.type;
+        });
+    }
+
+    getDevelopersFree() {
+        return this.developers.filter((item) => {
+            return item.type === this.type && item.status === 'free';
+        });
+    }
+
+    getDevelopersBusy() {
+        return this.developers.filter((item) => {
+            return item.type === this.type && item.status === 'busy';
+        });
+    }
+
+    getProjectsFree() {
+        return this.projects.filter((item) => {
+            return item.type === this.type && item.status === 'free';
+        });
+    }
+
+    getProjectsBusy() {
+        return this.projects.filter((item) => {
+            return item.type === this.type && item.status === 'busy';
+        });
+    }
+
+    resetNeedDevelopers() {
+        this.needDevelopers = 0;
+    }
+
+    getNeedDevelopers() {
+        return this.needDevelopers;
+    }
+
+    countNeedDevelopers() {
+        this.needDevelopers++;
     }
 }
 
 class WebDepartment extends Department {
-    constructor(employees, projects, needWebDevelopers=0) {
-        super();
-
-        this.webDevelopers = employees;
-        this.webProjects = projects;
-        this.needWebDevelopers = needWebDevelopers;
-    }
-
-    getWebDevelopers() {
-        return this.webDevelopers.filter((item) => {
-            return item.type === 'web';
-        });
-    }
-
-    getWebProjects() {
-        return this.webProjects.filter((item) => {
-            return item.type === 'web';
-        });
-    }
-
-    getWebDevelopersFree() {
-        return this.webDevelopers.filter((item) => {
-            return item.type ==='web' && item.status === 'free';
-        });
-    }
-
-    getWebDevelopersBusy() {
-        return this.webDevelopers.filter((item) => {
-            return item.type === 'web' && item.status === 'busy';
-        });
-    }
-
-    getWebProjectsFree() {
-        return this.webProjects.filter((item) => {
-            return item.type === 'web' && item.status === 'free';
-        });
-    }
-
-    getWebProjectsBusy() {
-        return this.webProjects.filter((item) => {
-            return item.type === 'web' && item.status === 'busy';
-        });
-    }
-
-    resetNeedWebDevelopers() {
-        this.needWebDevelopers = 0;
-    }
-
-    getNeedWebDevelopers() {
-        return this.needWebDevelopers;
-    }
-
-    countNeedWebDevelopers() {
-        this.needWebDevelopers++;
+    constructor(employees, projects, needDevelopers=0, type='web') {
+        super(employees, projects, needDevelopers, type);
     }
 
     getEmployeesForDelete() {
@@ -250,7 +249,7 @@ class WebDepartment extends Department {
             return employee1.experience - employee2.experience;
         }
 
-        let freeAndBigFreeDaysEmployees = this.webDevelopers.filter((item) => {
+        let freeAndBigFreeDaysEmployees = this.developers.filter((item) => {
             return item.status === 'free' && item.freeDays > 2;
         });
 
@@ -258,27 +257,27 @@ class WebDepartment extends Department {
     }
 
     developmentWebProjects() {
-        this.getWebProjectsFree().forEach((itemWebProject) => {
-            if(this.getWebDevelopersFree().length > 0) {
+        this.getProjectsFree().forEach((itemWebProject) => {
+            if(this.getDevelopersFree().length > 0) {
                     itemWebProject.setBusyDays(itemWebProject.complexity);
                     itemWebProject.developmentProject();
 
-                    this.getWebDevelopersFree()[0].getProject(itemWebProject.complexity);
+                    this.getDevelopersFree()[0].getProject(itemWebProject.complexity);
             } else {
-                this.countNeedWebDevelopers();
+                this.countNeedDevelopers();
             }
         });
 
-        this.getWebDevelopersFree().forEach((itemFreeDevelopers) => {
+        this.getDevelopersFree().forEach((itemFreeDevelopers) => {
             itemFreeDevelopers.countFreeDays();
         });
 
-        this.getWebProjectsBusy().forEach((itemBusyProject) => {
+        this.getProjectsBusy().forEach((itemBusyProject) => {
             itemBusyProject.countBusyDays();
             itemBusyProject.developmentProject();
         });
 
-        this.getWebDevelopersBusy().forEach((itemBusyDevelopers) => {
+        this.getDevelopersBusy().forEach((itemBusyDevelopers) => {
             itemBusyDevelopers.countBusyDays();
             itemBusyDevelopers.changeStatusOfBusy();
         });
@@ -286,98 +285,46 @@ class WebDepartment extends Department {
 }
 
 class MobDepartment extends Department {
-    constructor(employees, projects, needMobDevelopers=0) {
-        super();
-
-        this.mobDevelopers = employees;
-        this.mobProjects = projects;
-        this.needMobDevelopers = needMobDevelopers;
-    }
-
-    getMobDevelopers() {
-        return this.mobDevelopers.filter((item) => {
-            return item.type === 'mob';
-        });
-    }
-
-    getMobProjects() {
-        return this.mobProjects.filter((item) => {
-            return item.type === 'mob';
-        });
-    }
-
-    getMobDevelopersFree() {
-        return this.mobDevelopers.filter((item) => {
-            return item.type === 'mob' && item.status === 'free';
-        });
-    }
-
-    getMobDevelopersBusy() {
-        return this.mobDevelopers.filter((item) => {
-            return item.type === 'mob' && item.status === 'busy';
-        });
-    }
-
-    getMobProjectsFree() {
-        return this.mobProjects.filter((item) => {
-            return item.type === 'mob' && item.status === 'free';
-        });
-    }
-
-    getMobProjectsBusy() {
-        return this.mobProjects.filter((item) => {
-            return item.type === 'mob' && item.status === 'busy';
-        });
-    }
-
-    resetNeedMobDevelopers() {
-        this.needMobDevelopers = 0;
-    }
-
-    getNeedMobDevelopers() {
-        return this.needMobDevelopers;
-    }
-
-    countNeedMobDevelopers() {
-        this.needMobDevelopers++;
+    constructor(employees, projects, needDevelopers=0, type='mob') {
+        super(employees, projects, needDevelopers, type);
     }
 
     getEmployeesForDelete() {
         function compareExperience(employee1, employee2) {
             return employee1.experience - employee2.experience;
         }
-        let freeAndBigFreeDaysEmployees = this.mobDevelopers.filter((item) => {
+        let freeAndBigFreeDaysEmployees = this.developers.filter((item) => {
             return item.status === 'free' && item.freeDays > 2;
         });
         return freeAndBigFreeDaysEmployees.sort(compareExperience);
     }
 
     developmentMobProjects() {
-        this.getMobProjectsFree().forEach((itemMobProject) => {
-            if(this.getMobDevelopersFree().length >= itemMobProject.complexity) {
+        this.getProjectsFree().forEach((itemMobProject) => {
+            if(this.getDevelopersFree().length >= itemMobProject.complexity) {
                 itemMobProject.setBusyDays(1);
                 itemMobProject.developmentProject();
 
                 for(let i=0; i < itemMobProject.complexity; i++) {
-                    this.getMobDevelopersFree()[0].getProject(1);
+                    this.getDevelopersFree()[0].getProject(1);
                 }
             } else {
                 for(let i=0; i < itemMobProject.complexity; i++) {
-                    this.countNeedMobDevelopers();
+                    this.countNeedDevelopers();
                 }
             }
         });
 
-        this.getMobDevelopersFree().forEach((itemFreeDevelopers) => {
+        this.getDevelopersFree().forEach((itemFreeDevelopers) => {
             itemFreeDevelopers.countFreeDays();
         });
 
-        this.getMobProjectsBusy().forEach((itemBusyProject) => {
+        this.getProjectsBusy().forEach((itemBusyProject) => {
             itemBusyProject.countBusyDays();
             itemBusyProject.developmentProject();
         });
 
-        this.getMobDevelopersBusy().forEach((itemBusyDevelopers) => {
+        this.getDevelopersBusy().forEach((itemBusyDevelopers) => {
             itemBusyDevelopers.countBusyDays();
             itemBusyDevelopers.changeStatusOfBusy();
         });
@@ -385,54 +332,20 @@ class MobDepartment extends Department {
 }
 
 class QaDepartment extends Department {
-    constructor(employees, projects, needQaDevelopers=0) {
-        super();
-
-        this.qaDevelopers = employees;
-        this.qaProjects = projects;
-        this.needQaDevelopers = needQaDevelopers;
-    }
-
-    getQaDevelopers() {
-        return this.qaDevelopers.filter((item) => {
-            return item.type === 'qa';
-        });
+    constructor(employees, projects, needDevelopers=0, type='qa') {
+        super(employees, projects, needDevelopers, type);
     }
 
     getQaProjects() {
-        return this.qaProjects.filter((item) => {
+        return this.projects.filter((item) => {
             return item.status === 'completed';
         });
     }
 
     getQaApprovedProjects() {
-        return this.qaProjects.filter((item) => {
+        return this.projects.filter((item) => {
             return item.status === 'qaApproved';
         });
-    }
-
-    getQaDevelopersFree() {
-        return this.qaDevelopers.filter((item) => {
-            return item.type === 'qa' && item.status === 'free';
-        });
-    }
-
-    getQaDevelopersBusy() {
-        return this.qaDevelopers.filter((item) => {
-            return item.type === 'qa' && item.status === 'busy';
-        });
-    }
-
-    resetNeedQaDevelopers() {
-        this.needQaDevelopers = 0;
-    }
-
-    getNeedQaDevelopers() {
-        return this.needQaDevelopers;
-    }
-
-    countNeedQaDevelopers() {
-        this.needQaDevelopers++;
     }
 
     getEmployeesForDelete() {
@@ -440,7 +353,7 @@ class QaDepartment extends Department {
             return employee1.experience - employee2.experience;
         }
 
-        let freeAndBigFreeDaysEmployees = this.qaDevelopers.filter((item) => {
+        let freeAndBigFreeDaysEmployees = this.developers.filter((item) => {
             return item.status === 'free' && item.freeDays > 2;
         });
 
@@ -449,17 +362,17 @@ class QaDepartment extends Department {
 
     developmentQaProjects() {
         this.getQaProjects().forEach((itemQaProject) => {
-            if(this.getQaDevelopersFree().length > 0) {
+            if(this.getDevelopersFree().length > 0) {
                 itemQaProject.setBusyDays(0);
                 itemQaProject.developmentOfQa();
 
-                this.getQaDevelopersFree()[0].getProject(1);
+                this.getDevelopersFree()[0].getProject(1);
             } else {
-                this.countNeedQaDevelopers();
+                this.countNeedDevelopers();
             }
         });
 
-        this.getQaDevelopersFree().forEach((itemFreeDevelopers) => {
+        this.getDevelopersFree().forEach((itemFreeDevelopers) => {
             itemFreeDevelopers.countFreeDays();
         });
 
@@ -467,7 +380,7 @@ class QaDepartment extends Department {
             itemBusyProject.developmentOfQa();
         });
 
-        this.getQaDevelopersBusy().forEach((itemBusyDevelopers) => {
+        this.getDevelopersBusy().forEach((itemBusyDevelopers) => {
             itemBusyDevelopers.countBusyDays();
             itemBusyDevelopers.changeStatusOfBusy();
         });
@@ -506,11 +419,11 @@ class Company {
     webDepartmentWork() {
         this.webDepartment.developmentWebProjects();
 
-        for(let i=0; i < this.webDepartment.getNeedWebDevelopers(); i++){
+        for(let i=0; i < this.webDepartment.getNeedDevelopers(); i++){
             this.director.addEmployee(this.employees, new WebDeveloper());
         }
 
-        this.webDepartment.resetNeedWebDevelopers();
+        this.webDepartment.resetNeedDevelopers();
 
         if(this.webDepartment.getEmployeesForDelete().length > 0) {
             this.director.deleteEmployee(this.webDepartment.getEmployeesForDelete()[0], this.webDepartment.getEmployeesForDelete()[0].getId());
@@ -520,11 +433,11 @@ class Company {
     mobDepartmentWork() {
         this.mobDepartment.developmentMobProjects();
 
-        for(let i=0; i < this.mobDepartment.getNeedMobDevelopers(); i++){
+        for(let i=0; i < this.mobDepartment.getNeedDevelopers(); i++){
             this.director.addEmployee(this.employees, new MobDeveloper());
         }
 
-        this.mobDepartment.resetNeedMobDevelopers();
+        this.mobDepartment.resetNeedDevelopers();
 
         if(this.mobDepartment.getEmployeesForDelete().length > 0) {
             this.director.deleteEmployee(this.mobDepartment.getEmployeesForDelete()[0], this.mobDepartment.getEmployeesForDelete()[0].getId());
@@ -535,11 +448,11 @@ class Company {
         if(this.qaDepartament.getQaProjects().length > 0) {
             this.qaDepartament.developmentQaProjects();
 
-            for (let i = 0; i < this.qaDepartament.getNeedQaDevelopers(); i++) {
+            for (let i = 0; i < this.qaDepartament.getNeedDevelopers(); i++) {
                 this.director.addEmployee(this.employees, new QaDeveloper());
             }
 
-            this.qaDepartament.resetNeedQaDevelopers();
+            this.qaDepartament.resetNeedDevelopers();
 
             if (this.qaDepartament.getEmployeesForDelete().length > 0) {
                 this.director.deleteEmployee(this.qaDepartament.getEmployeesForDelete()[0], this.qaDepartament.getEmployeesForDelete()[0].getId());
