@@ -12,7 +12,6 @@ const getId = function () {
         return id;
 }
 
-
 class Director {
     constructor(employees, deleteEmployees=0, addEmployees=0) {
         this.employees = employees;
@@ -152,7 +151,6 @@ class Employee {
     }
 
     getProject(projectComplexity) {
-
         this.busyDays = projectComplexity;
 
         this.changeStatusOfBusy();
@@ -188,7 +186,6 @@ class Department {
     constructor() {
 
     }
-
 }
 
 class WebDepartment extends Department {
@@ -349,11 +346,9 @@ class MobDepartment extends Department {
         function compareExperience(employee1, employee2) {
             return employee1.experience - employee2.experience;
         }
-
         let freeAndBigFreeDaysEmployees = this.mobDevelopers.filter((item) => {
             return item.status === 'free' && item.freeDays > 2;
         });
-
         return freeAndBigFreeDaysEmployees.sort(compareExperience);
     }
 
@@ -362,7 +357,6 @@ class MobDepartment extends Department {
             if(this.getMobDevelopersFree().length >= itemMobProject.complexity) {
                 itemMobProject.setBusyDays(1);
                 itemMobProject.developmentProject();
-
 
                 for(let i=0; i < itemMobProject.complexity; i++) {
                     this.getMobDevelopersFree()[0].getProject(1);
@@ -388,7 +382,6 @@ class MobDepartment extends Department {
             itemBusyDevelopers.changeStatusOfBusy();
         });
     }
-
 }
 
 class QaDepartment extends Department {
@@ -398,7 +391,6 @@ class QaDepartment extends Department {
         this.qaDevelopers = employees;
         this.qaProjects = projects;
         this.needQaDevelopers = needQaDevelopers;
-
     }
 
     getQaDevelopers() {
@@ -480,7 +472,6 @@ class QaDepartment extends Department {
             itemBusyDevelopers.changeStatusOfBusy();
         });
     }
-
 }
 
 class Company {
@@ -488,14 +479,11 @@ class Company {
         this.employees = [];
         this.projects = [];
 
-
-
         this.director = new Director(this.employees);
         this.webDepartment = new WebDepartment(this.employees, this.projects);
         this.mobDepartment = new MobDepartment(this.employees, this.projects);
         this.qaDepartament = new QaDepartment(this.employees, this.projects);
     }
-
 
     work(allDays) {
         for(let i=1; i <= allDays; i++) {
@@ -512,7 +500,6 @@ class Company {
 
             this.qaDepartmentWork();
         }
-
         this.getStatistica(allDays);
     }
 
