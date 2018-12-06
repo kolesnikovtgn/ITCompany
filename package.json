@@ -1,0 +1,13 @@
+{
+  "name": "ITCompany",
+  "version": "0.0.1",
+  "scripts": {
+    "lint": "eslint"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "eslint": "^5.9.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.14.0"
+  }
+}
