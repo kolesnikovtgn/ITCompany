@@ -85,11 +85,7 @@ class Project {
     }
 
     developmentProject() {
-        if(this.busyDays > 0) {
-            this.changeStatus('busy');
-        } else {
-            this.changeStatus('completed');
-        }
+        (this.busyDays > 0)? this.changeStatus('busy') : this.changeStatus('completed');
     }
 
     developmentOfQa() {
@@ -401,10 +397,8 @@ class Company {
     work(allDays) {
         for(let i=1; i <= allDays; i++) {
 
-            if(this.projects.length > 0) {
-                this.director.getProjects(this.projects);
-            } else {
-                this.director.getProjects(this.projects);
+            this.director.getProjects(this.projects);
+            if(!this.projects.length) {
                 continue;
             }
             this.webDepartmentWork();
