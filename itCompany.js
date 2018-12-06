@@ -21,10 +21,10 @@ class Director {
 
     addEmployee(employees, employee) {
         employees.push(employee);
-        this.countAddEmployees();
+        this.incrementAddEmployees();
     }
 
-    countAddEmployees() {
+    incrementAddEmployees() {
         this.addEmployees++;
     }
 
@@ -36,10 +36,10 @@ class Director {
         const index = this.employees.findIndex((item) => item.id === id);
 
         this.employees.splice(index, 1);
-        this.countDeleteEmployees();
+        this.incrementDeleteEmployees();
     }
 
-    countDeleteEmployees() {
+    incrementDeleteEmployees() {
         this.deleteEmployees++;
     }
 
@@ -72,11 +72,11 @@ class Project {
         return randomType;
     }
 
-    changeStatus(status) {
+    setStatus(status) {
         this.status = status;
     }
 
-    countBusyDays() {
+    decrementBusyDays() {
         this.busyDays--;
     }
 
@@ -85,14 +85,14 @@ class Project {
     }
 
     developmentProject() {
-        (this.busyDays > 0)? this.changeStatus('busy') : this.changeStatus('completed');
+        (this.busyDays > 0)? this.setStatus('busy') : this.setStatus('completed');
     }
 
     developmentOfQa() {
         if(this.busyDays > 0) {
-            this.changeStatus('completed')
+            this.setStatus('completed')
         } else {
-            this.changeStatus('qaApproved');
+            this.setStatus('qaApproved');
         }
     }
 
@@ -117,19 +117,19 @@ class Employee {
         return this.id;
     }
 
-    countExp() {
+    incrementExp() {
         this.experience++;
     }
 
-    countFreeDays() {
+    incrementFreeDays() {
         this.freeDays++;
     }
 
-    countBusyDays() {
+    decrementBusyDays() {
         this.busyDays--;
     }
 
-    changeStatus(status) {
+    setStatus(status) {
         this.status = status;
     }
 
@@ -139,10 +139,10 @@ class Employee {
 
     changeStatusOfBusy() {
         if(this.busyDays > 0) {
-            this.changeStatus('busy');
+            this.setStatus('busy');
         } else {
-            this.countExp();
-            this.changeStatus('free');
+            this.incrementExp();
+            this.setStatus('free');
         }
     }
 
@@ -230,7 +230,7 @@ class Department {
         return this.needDevelopers;
     }
 
-    countNeedDevelopers() {
+    incrementNeedDevelopers() {
         this.needDevelopers++;
     }
 }
@@ -260,21 +260,21 @@ class WebDepartment extends Department {
 
                     this.getDevelopersFree()[0].getProject(itemWebProject.complexity);
             } else {
-                this.countNeedDevelopers();
+                this.incrementNeedDevelopers();
             }
         });
 
         this.getDevelopersFree().forEach((itemFreeDevelopers) => {
-            itemFreeDevelopers.countFreeDays();
+            itemFreeDevelopers.incrementFreeDays();
         });
 
         this.getProjectsBusy().forEach((itemBusyProject) => {
-            itemBusyProject.countBusyDays();
+            itemBusyProject.decrementBusyDays();
             itemBusyProject.developmentProject();
         });
 
         this.getDevelopersBusy().forEach((itemBusyDevelopers) => {
-            itemBusyDevelopers.countBusyDays();
+            itemBusyDevelopers.decrementBusyDays();
             itemBusyDevelopers.changeStatusOfBusy();
         });
     }
@@ -306,22 +306,22 @@ class MobDepartment extends Department {
                 }
             } else {
                 for(let i=0; i < itemMobProject.complexity; i++) {
-                    this.countNeedDevelopers();
+                    this.incrementNeedDevelopers();
                 }
             }
         });
 
         this.getDevelopersFree().forEach((itemFreeDevelopers) => {
-            itemFreeDevelopers.countFreeDays();
+            itemFreeDevelopers.incrementFreeDays();
         });
 
         this.getProjectsBusy().forEach((itemBusyProject) => {
-            itemBusyProject.countBusyDays();
+            itemBusyProject.decrementBusyDays();
             itemBusyProject.developmentProject();
         });
 
         this.getDevelopersBusy().forEach((itemBusyDevelopers) => {
-            itemBusyDevelopers.countBusyDays();
+            itemBusyDevelopers.decrementBusyDays();
             itemBusyDevelopers.changeStatusOfBusy();
         });
     }
@@ -364,12 +364,12 @@ class QaDepartment extends Department {
 
                 this.getDevelopersFree()[0].getProject(1);
             } else {
-                this.countNeedDevelopers();
+                this.incrementNeedDevelopers();
             }
         });
 
         this.getDevelopersFree().forEach((itemFreeDevelopers) => {
-            itemFreeDevelopers.countFreeDays();
+            itemFreeDevelopers.incrementFreeDays();
         });
 
         this.getQaProjects().forEach((itemBusyProject) => {
@@ -377,7 +377,7 @@ class QaDepartment extends Department {
         });
 
         this.getDevelopersBusy().forEach((itemBusyDevelopers) => {
-            itemBusyDevelopers.countBusyDays();
+            itemBusyDevelopers.decrementBusyDays();
             itemBusyDevelopers.changeStatusOfBusy();
         });
     }
