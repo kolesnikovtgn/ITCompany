@@ -1,20 +1,8 @@
-const getId = function () {
-  let i;
-  let random;
-  let id = '';
-  for (i = 0; i < 32; i++) {
-    random = Math.random() * 16 | 0;
-    if (i === 8 || i === 12 || i === 16 || i === 20) {
-      id += '1';
-    }
-    id += (i === 12 ? 4 : (i === 16 ? (random & 3 | 8) : random)).toString(16);
-  }
-  return id;
-}
+const uuid = require('uuid/v1');
 
 class Project {
   constructor(status = 'free', busyDays = 0) {
-    this.id = getId();
+    this.id = uuid();
     this.type = this.getType();
     this.complexity = this.getComplexity();
     this.status = status;
@@ -22,10 +10,8 @@ class Project {
   }
 
   getType() {
-    const typeArray = ['web', 'mob'];
-    const randomType = typeArray[Math.floor(Math.random() * typeArray.length)];
-
-    return randomType;
+    this.typeArray = ['web', 'mob'];
+    return this.typeArray[Math.floor(Math.random() * this.typeArray.length)];
   }
 
   setStatus(status) {
@@ -45,17 +31,12 @@ class Project {
   }
 
   developmentOfQa() {
-    if (this.busyDays > 0) {
-      this.setStatus('completed')
-    } else {
-      this.setStatus('qaApproved');
-    }
+    (this.busyDays > 0) ? this.setStatus('completed') : this.setStatus('qaApproved');
   }
 
   getComplexity() {
-    const randomComplexity = Math.floor(Math.random() * 3) + 1;
-
-    return randomComplexity;
+    this.mathComplexity = Math.floor(Math.random() * 3) + 1;
+    return this.mathComplexity;
   }
 }
 
@@ -72,7 +53,7 @@ class Director {
   }
 
   incrementAddEmployees() {
-    this.addEmployees++;
+    this.addEmployees += 1;
   }
 
   getAddEmployees() {
@@ -95,17 +76,17 @@ class Director {
   }
 
   getProjects(projects) {
-    const countPrj = Math.floor(Math.random()*4);
+    this.countPrj = Math.floor(Math.random() * 4);
 
-    for (let i = 0; i <= countPrj; i += 1){
+    for (let i = 0; i <= this.countPrj; i += 1) {
       projects.push(new Project());
     }
   }
 }
 
 class Employee {
-  constructor(type, experience=0, status='free', busyDays=0, freeDays=0) {
-    this.id = getId();
+  constructor(type, experience = 0, status = 'free', busyDays = 0, freeDays = 0) {
+    this.id = uuid();
     this.type = type;
     this.experience = experience;
     this.status = status;
@@ -157,7 +138,7 @@ class Employee {
 class WebDeveloper extends Employee {
   constructor(type = 'web', experience = 0, status = 'free', busyDays = 0, freeDays = 0) {
     super(type, experience, status, busyDays, freeDays);
-    this.id = getId();
+    this.id = uuid();
     this.type = type;
   }
 }
@@ -165,7 +146,7 @@ class WebDeveloper extends Employee {
 class MobDeveloper extends Employee {
   constructor(type = 'mob', experience = 0, status = 'free', busyDays = 0, freeDays = 0) {
     super(type, experience, status, busyDays, freeDays);
-    this.id = getId();
+    this.id = uuid();
     this.type = type;
   }
 }
@@ -173,7 +154,7 @@ class MobDeveloper extends Employee {
 class QaDeveloper extends Employee {
   constructor(type = 'qa', experience = 0, status = 'free', busyDays = 0, freeDays = 0) {
     super(type, experience, status, busyDays, freeDays);
-    this.id = getId();
+    this.id = uuid();
     this.type = type;
   }
 }
@@ -187,39 +168,27 @@ class Department {
   }
 
   getDevelopers() {
-    return this.developers.filter((item) => {
-      return item.type === this.type;
-    });
+    return this.developers.filter(item => item.type === this.type);
   }
 
   getProjects() {
-    return this.projects.filter((item) => {
-      return item.type === this.type;
-    });
+    return this.projects.filter(item => item.type === this.type);
   }
 
   getDevelopersFree() {
-    return this.developers.filter((item) => {
-      return item.type === this.type && item.status === 'free';
-    });
+    return this.developers.filter(item => item.type === this.type && item.status === 'free');
   }
 
   getDevelopersBusy() {
-    return this.developers.filter((item) => {
-      return item.type === this.type && item.status === 'busy';
-    });
+    return this.developers.filter(item => item.type === this.type && item.status === 'busy');
   }
 
   getProjectsFree() {
-    return this.projects.filter((item) => {
-      return item.type === this.type && item.status === 'free';
-    });
+    return this.projects.filter(item => item.type === this.type && item.status === 'free');
   }
 
   getProjectsBusy() {
-    return this.projects.filter((item) => {
-      return item.type === this.type && item.status === 'busy';
-    });
+    return this.projects.filter(item => item.type === this.type && item.status === 'busy');
   }
 
   resetNeedDevelopers() {
@@ -245,7 +214,7 @@ class WebDepartment extends Department {
       return employee1.experience - employee2.experience;
     }
     return this.developers
-      .filter((item) => { return item.status === 'free' && item.freeDays > 2; })
+      .filter(item => item.status === 'free' && item.freeDays > 2)
       .sort(compareExperience);
   }
 
@@ -286,7 +255,7 @@ class MobDepartment extends Department {
       return employee1.experience - employee2.experience;
     }
     return this.developers
-      .filter((item) => { return item.status === 'free' && item.freeDays > 2; })
+      .filter(item => item.status === 'free' && item.freeDays > 2)
       .sort(compareExperience);
   }
 
@@ -321,20 +290,16 @@ class MobDepartment extends Department {
 }
 
 class QaDepartment extends Department {
-  constructor(employees, projects, needDevelopers=0, type='qa') {
+  constructor(employees, projects, needDevelopers = 0, type = 'qa') {
     super(employees, projects, needDevelopers, type);
   }
 
   getQaProjects() {
-    return this.projects.filter((item) => {
-      return item.status === 'completed';
-    });
+    return this.projects.filter(item => item.status === 'completed');
   }
 
   getQaApprovedProjects() {
-    return this.projects.filter((item) => {
-      return item.status === 'qaApproved';
-    });
+    return this.projects.filter(item => item.status === 'qaApproved');
   }
 
 
@@ -343,7 +308,7 @@ class QaDepartment extends Department {
       return employee1.experience - employee2.experience;
     }
     return this.developers
-      .filter((item) => { return item.status === 'free' && item.freeDays > 2; })
+      .filter(item => item.status === 'free' && item.freeDays > 2)
       .sort(compareExperience);
   }
 
@@ -386,9 +351,7 @@ class Company {
   work(allDays) {
     for (let i = 1; i <= allDays; i += 1) {
       this.director.getProjects(this.projects);
-      if (!this.projects.length) {
-        continue;
-      }
+
       this.webDepartmentWork();
       this.mobDepartmentWork();
       this.qaDepartmentWork();
@@ -398,26 +361,30 @@ class Company {
 
   webDepartmentWork() {
     this.webDepartment.developmentWebProjects();
-    for (let i = 0; i < this.webDepartment.getNeedDevelopers(); i += 1){
+    for (let i = 0; i < this.webDepartment.getNeedDevelopers(); i += 1) {
       this.director.addEmployee(this.employees, new WebDeveloper());
     }
     this.webDepartment.resetNeedDevelopers();
     if (this.webDepartment.getEmployeesForDelete().length > 0) {
       this.director.deleteEmployee(
-        this.webDepartment.getEmployeesForDelete()[0], this.webDepartment.getEmployeesForDelete()[0].getId()
+        this.webDepartment.getEmployeesForDelete()[0],
+        this.webDepartment.getEmployeesForDelete()[0].getId(),
       );
     }
   }
 
   mobDepartmentWork() {
     this.mobDepartment.developmentMobProjects();
-    for (let i = 0; i < this.mobDepartment.getNeedDevelopers(); i += 1){
+    for (let i = 0; i < this.mobDepartment.getNeedDevelopers(); i += 1) {
       this.director.addEmployee(this.employees, new MobDeveloper());
     }
     this.mobDepartment.resetNeedDevelopers();
 
-    if(this.mobDepartment.getEmployeesForDelete().length > 0) {
-      this.director.deleteEmployee(this.mobDepartment.getEmployeesForDelete()[0], this.mobDepartment.getEmployeesForDelete()[0].getId());
+    if (this.mobDepartment.getEmployeesForDelete().length > 0) {
+      this.director.deleteEmployee(
+        this.mobDepartment.getEmployeesForDelete()[0],
+        this.mobDepartment.getEmployeesForDelete()[0].getId(),
+      );
     }
   }
 
@@ -429,7 +396,10 @@ class Company {
       }
       this.qaDepartament.resetNeedDevelopers();
       if (this.qaDepartament.getEmployeesForDelete().length > 0) {
-        this.director.deleteEmployee(this.qaDepartament.getEmployeesForDelete()[0], this.qaDepartament.getEmployeesForDelete()[0].getId());
+        this.director.deleteEmployee(
+          this.qaDepartament.getEmployeesForDelete()[0],
+          this.qaDepartament.getEmployeesForDelete()[0].getId(),
+        );
       }
     }
   }
@@ -443,4 +413,5 @@ class Company {
 }
 
 const company = new Company();
+
 company.work(365);
